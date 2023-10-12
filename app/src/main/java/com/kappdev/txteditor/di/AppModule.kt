@@ -1,0 +1,28 @@
+package com.kappdev.txteditor.di
+
+import android.app.Application
+import com.kappdev.txteditor.data.SettingsManager
+import com.kappdev.txteditor.domain.use_case.ReadFile
+import com.kappdev.txteditor.domain.use_case.WriteFile
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideReadFileUseCase(app: Application): ReadFile = ReadFile(app)
+
+    @Provides
+    @Singleton
+    fun provideWriteFileUseCase(app: Application): WriteFile = WriteFile(app)
+
+    @Provides
+    @Singleton
+    fun provideSettingsManager(app: Application): SettingsManager = SettingsManager(app)
+}
