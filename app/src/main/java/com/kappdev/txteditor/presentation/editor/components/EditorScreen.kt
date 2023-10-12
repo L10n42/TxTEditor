@@ -19,7 +19,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kappdev.txteditor.data.SettingsDefaults
 import com.kappdev.txteditor.data.SettingsManager
 import com.kappdev.txteditor.domain.model.EditorSettings
 import com.kappdev.txteditor.presentation.common.InfoSnackbarHandler
@@ -45,7 +44,11 @@ fun EditorScreen(
     LoadingDialog(isVisible = viewModel.loadingState.isLoading.value)
 
     if (isSheetVisible) {
-        SettingsBottomSheet(settingsManager) { setSheetVisibility(false) }
+        SettingsBottomSheet(
+            viewModel = viewModel,
+            settingsManager = settingsManager,
+            onDismiss = { setSheetVisibility(false) }
+        )
     }
 
     DialogController(viewModel)

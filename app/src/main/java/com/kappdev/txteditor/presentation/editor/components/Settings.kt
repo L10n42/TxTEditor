@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,12 +51,12 @@ fun Settings.NumberPicker(
     title: String,
     number: Int,
     range: Iterable<Int>,
-    border: Boolean = true,
+    hasBorder: Boolean = true,
     icon: ImageVector? = null,
     onNumberChange: (newNumber: Int) -> Unit
 ) {
     var isPickerVisible by remember { mutableStateOf(false) }
-    Form(border = border) {
+    Form(hasBorder = hasBorder) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             icon?.let {
                 Icon(icon = icon)
@@ -136,17 +137,17 @@ fun Settings.GroupItem(
     title: String,
     icon: ImageVector? = null,
     onClick: () -> Unit
-) = Item(title = title, border = false, icon = icon, onClick =  onClick)
+) = Item(title = title, hasBorder = false, icon = icon, onClick =  onClick)
 
 @Composable
 fun Settings.Item(
     title: String,
-    border: Boolean = true,
+    hasBorder: Boolean = true,
     icon: ImageVector? = null,
     onClick: () -> Unit
 ) {
     Form(
-        border = border,
+        hasBorder = hasBorder,
         contentArrangement = Arrangement.Start,
         onClick = onClick
     ) {
@@ -159,14 +160,35 @@ fun Settings.Item(
 }
 
 @Composable
+fun Settings.TextItem(
+    text: String,
+    hasBorder: Boolean = true,
+) {
+    Form(hasBorder = hasBorder) {
+        Title(
+            text = text,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@Composable
 fun Settings.Switch(
     title: String,
     isChecked: Boolean,
+    icon: ImageVector? = null,
+    hasBorder: Boolean = true,
     enabled: Boolean = true,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    Form {
-        Title(text = title)
+    Form(hasBorder = hasBorder) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            icon?.let {
+                Icon(icon = icon)
+                HorizontalSpace(8.dp)
+            }
+            Title(text = title)
+        }
         Switch(
             checked = isChecked,
             colors = defaultSwitchColors(),
@@ -180,9 +202,9 @@ fun Settings.Switch(
                     },
                     label = "animated switch icon"
                 ) { checked ->
-                    val icon = if (checked) Icons.Rounded.Done else Icons.Rounded.Close
+                    val switchIcon = if (checked) Icons.Rounded.Done else Icons.Rounded.Close
                     Icon(
-                        imageVector = icon,
+                        imageVector = switchIcon,
                         modifier = Modifier.size(20.dp),
                         contentDescription = null
                     )
@@ -208,21 +230,22 @@ fun Settings.Icon(
 @Composable
 fun Settings.Title(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onBackground
 ) {
     Text(
         text = text,
         maxLines = 1,
+        color = color,
         fontSize = 16.sp,
         modifier = modifier,
-        overflow = TextOverflow.Ellipsis,
-        color = MaterialTheme.colorScheme.onBackground
+        overflow = TextOverflow.Ellipsis
     )
 }
 
 @Composable
 fun Settings.Form(
-    border: Boolean = true,
+    hasBorder: Boolean = true,
     height: Dp = DefaultItemHeight,
     contentArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
     onClick: (() -> Unit)? = null,
@@ -232,7 +255,7 @@ fun Settings.Form(
     Column(
         modifier = Modifier.background(MaterialTheme.colorScheme.background.copy(0.16f))
     ) {
-        if (border) DefaultDivider()
+        if (hasBorder) DefaultDivider()
         Row(
             modifier = Modifier
                 .height(height)
@@ -243,7 +266,7 @@ fun Settings.Form(
             horizontalArrangement = contentArrangement,
             content = content
         )
-        if (border) DefaultDivider()
+        if (hasBorder) DefaultDivider()
     }
 }
 

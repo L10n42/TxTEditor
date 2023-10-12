@@ -1,6 +1,9 @@
 package com.kappdev.txteditor.presentation.editor
 
 import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -110,6 +113,18 @@ class EditorViewModel @Inject constructor(
     private fun setContent(content: String) {
         originalText = content
         setText(content)
+    }
+
+    fun copyToClipboard() {
+        val clipboardManager = app.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Copied Text", text.value)
+        clipboardManager.setPrimaryClip(clip)
+        viewModelScope.launch { snackbarState.show(R.string.copied_to_clipboard) }
+    }
+
+    fun getWordCount(): Int {
+        val words = text.value.trim().split(Regex("\\s+"))
+        return if (text.value.isEmpty()) 0 else words.size
     }
 
     fun hideDialog() = _dialogState.hide()

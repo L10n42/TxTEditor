@@ -23,18 +23,24 @@ sealed class Setting<T>(val key: Preferences.Key<T>, val default: T) {
     data object Theme: Setting<Boolean>(SettingsKey.THEME, SettingsDefaults.THEME)
     data object TextSize: Setting<Int>(SettingsKey.TEXT_SIZE, SettingsDefaults.TEXT_SIZE)
     data object TextStyle: Setting<String>(SettingsKey.TEXT_STYLE, SettingsDefaults.TEXT_STYLE.name)
+    data object IsTextBold: Setting<Boolean>(SettingsKey.IS_TEXT_BOLD, SettingsDefaults.IS_TEXT_BOLD)
+    data object IsTextItalic: Setting<Boolean>(SettingsKey.IS_TEXT_ITALIC, SettingsDefaults.IS_TEXT_ITALIC)
 }
 
 object SettingsDefaults {
     const val THEME = true
     const val TEXT_SIZE = 16
     val TEXT_STYLE = TextStyle.DEFAULT
+    const val IS_TEXT_BOLD = false
+    const val IS_TEXT_ITALIC = false
 }
 
 object SettingsKey {
     val THEME = booleanPreferencesKey("IS_THEME_DARK")
     val TEXT_SIZE = intPreferencesKey("TEXT_SIZE")
     val TEXT_STYLE = stringPreferencesKey("TEXT_STYLE")
+    val IS_TEXT_BOLD = booleanPreferencesKey("IS_TEXT_BOLD")
+    val IS_TEXT_ITALIC = booleanPreferencesKey("IS_TEXT_ITALIC")
 }
 
 class SettingsManager @Inject constructor(
@@ -44,7 +50,9 @@ class SettingsManager @Inject constructor(
     fun getEditorSettings() = context.dataStore.data.map { preferences ->
         EditorSettings(
             textSize = preferences.get(Setting.TextSize),
-            textStyle = TextStyle.valueOf(preferences.get(Setting.TextStyle))
+            textStyle = TextStyle.valueOf(preferences.get(Setting.TextStyle)),
+            isBold = preferences.get(Setting.IsTextBold),
+            isItalic = preferences.get(Setting.IsTextItalic)
         )
     }
 

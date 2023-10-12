@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.sp
 import com.kappdev.txteditor.R
@@ -39,7 +40,9 @@ fun EditorField(
         fontSize = settings.textSize.sp,
         lineHeight = (settings.textSize + 3).sp,
         color = MaterialTheme.colorScheme.onBackground,
-        fontFamily = settings.textStyle.family
+        fontFamily = settings.textStyle.family,
+        fontWeight = if (settings.isBold) FontWeight.SemiBold else FontWeight.Normal,
+        fontStyle = if (settings.isItalic) FontStyle.Italic else FontStyle.Normal
     )
 
     BasicTextField(
@@ -59,7 +62,7 @@ fun EditorField(
                     Text(
                         text = stringResource(R.string.enter_text_hint),
                         style = textStyle.copy(
-                            color = MaterialTheme.colorScheme.onBackground.copy(0.32f)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }

@@ -23,7 +23,7 @@ fun Settings.TextStylePicker(
     onStyleChange: (newStyle: TextStyle) -> Unit
 ) {
     Form(
-        border = border,
+        hasBorder = border,
         height = 52.dp
     ) {
         Row(
