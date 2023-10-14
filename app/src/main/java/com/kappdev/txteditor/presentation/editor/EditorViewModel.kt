@@ -107,6 +107,8 @@ class EditorViewModel @Inject constructor(
     fun checkFileAndSave() {
         if (isContentChanged()) {
             if (fileUri.value == null) launchFileSave() else saveFile()
+        } else {
+            viewModelScope.launch { snackbarState.show(R.string.nothing_to_save_msg) }
         }
     }
 
