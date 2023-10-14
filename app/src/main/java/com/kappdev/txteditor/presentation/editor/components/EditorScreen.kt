@@ -38,16 +38,27 @@ fun EditorScreen(
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState()
-    val (isSheetVisible, setSheetVisibility) = remember { mutableStateOf(false) }
+    val (isSettingsVisible, showSettings) = remember { mutableStateOf(false) }
+    val (isHistoryVisible, showHistory) = remember { mutableStateOf(false) }
     val editorSettings by settingsManager.getEditorSettings().collectAsState(EditorSettings())
 
     LoadingDialog(isVisible = viewModel.loadingState.isLoading.value)
 
-    if (isSheetVisible) {
+    if (isHistoryVisible) {
+        HistoryBottomSheet(
+            openFile = { fileUri ->
+                viewModel.setFileUri(fileUri)
+                viewModel.readFileFromUri()
+            },
+            onDismiss = { showHistory(false) }
+        )
+    }
+
+    if (isSettingsVisible) {
         SettingsBottomSheet(
             viewModel = viewModel,
             settingsManager = settingsManager,
-            onDismiss = { setSheetVisibility(false) }
+            onDismiss = { showSettings(false) }
         )
     }
 
@@ -60,7 +71,8 @@ fun EditorScreen(
         bottomBar = {
             Toolbar { action ->
                 when (action) {
-                    ToolbarAction.OpenSettings -> setSheetVisibility(true)
+                    ToolbarAction.OpenSettings -> showSettings(true)
+                    ToolbarAction.OpenHistory -> showHistory(true)
                     ToolbarAction.OpenFile -> viewModel.checkChangesAndOpen()
                     ToolbarAction.NewFile -> viewModel.checkChangesAndNew()
                     ToolbarAction.Save -> viewModel.checkFileAndSave()

@@ -20,5 +20,12 @@
     <string name="st_italic">Italic</string>
     <string name="st_bold">Bold</string>
     <string name="st_word_count">Word Count: %d</string>
+    <string name="st_file">File: %s</string>
     <string name="copied_to_clipboard">Copied to clipboard!</string>
+    <string name="copy_error_msg">There is no text to copy.</string>
+    <string name="share_via">Share Via</string>
+    <string name="share_error_msg">There is no text to share.</string>
+    <string name="st_display_filename">Display filename</string>
+    <string name="empty_history_msg">You have no history yet.</string>
+    <string name="clear_history">Clear history</string>
 </resources>

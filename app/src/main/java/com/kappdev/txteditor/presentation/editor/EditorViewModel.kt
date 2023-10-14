@@ -9,7 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kappdev.txteditor.R
+import com.kappdev.txteditor.domain.use_case.AddToHistory
+import com.kappdev.txteditor.domain.use_case.GetFileName
 import com.kappdev.txteditor.domain.use_case.ReadFile
+import com.kappdev.txteditor.domain.use_case.ShareText
 import com.kappdev.txteditor.domain.use_case.WriteFile
 import com.kappdev.txteditor.domain.util.Result
 import com.kappdev.txteditor.domain.util.getMessageOrEmpty
@@ -24,12 +27,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.random.Random
+
 
 @HiltViewModel
 class EditorViewModel @Inject constructor(
     private val readFile: ReadFile,
     private val writeFile: WriteFile,
+    private val shareText: ShareText,
+    private val getFilename: GetFileName,
+    private val addToHistory: AddToHistory,
     private val app: Application
 ) : ViewModel() {
 
@@ -39,17 +45,17 @@ class EditorViewModel @Inject constructor(
     private val _dialogState = mutableComponentStateOf<Dialog?>(null)
     val dialogState: ComponentState<Dialog?> = _dialogState
 
-    private val _openFileFlow = MutableSharedFlow<Int?>()
-    val openFileFlow: SharedFlow<Int?> = _openFileFlow
+    private val _openFileFlow = MutableSharedFlow<Unit>()
+    val openFileFlow: SharedFlow<Unit> = _openFileFlow
 
-    private val _saveFileFlow = MutableSharedFlow<Int?>()
-    val saveFileFlow: SharedFlow<Int?> = _saveFileFlow
+    private val _saveFileFlow = MutableSharedFlow<Unit>()
+    val saveFileFlow: SharedFlow<Unit> = _saveFileFlow
 
     private var originalText = ""
     var text = mutableStateOf("")
         private set
 
-    private var fileUri = mutableStateOf<Uri?>(null)
+    private val fileUri = mutableStateOf<Uri?>(null)
 
     val snackbarState = SnackbarState(app)
 
@@ -105,21 +111,32 @@ class EditorViewModel @Inject constructor(
     }
 
     fun newFile() {
-        originalText = ""
-        text.value = ""
+        setContent("")
         fileUri.value = null
     }
 
     private fun setContent(content: String) {
         originalText = content
-        setText(content)
+        text.value = content
     }
 
     fun copyToClipboard() {
-        val clipboardManager = app.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("Copied Text", text.value)
-        clipboardManager.setPrimaryClip(clip)
-        viewModelScope.launch { snackbarState.show(R.string.copied_to_clipboard) }
+        if (text.value.isEmpty()) {
+            viewModelScope.launch { snackbarState.show(R.string.copy_error_msg) }
+        } else {
+            val clipboardManager = app.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Copied Text", text.value)
+            clipboardManager.setPrimaryClip(clip)
+            viewModelScope.launch { snackbarState.show(R.string.copied_to_clipboard) }
+        }
+    }
+
+    fun share() {
+        if (text.value.isEmpty()) {
+            viewModelScope.launch { snackbarState.show(R.string.share_error_msg) }
+        } else {
+            shareText(text.value)
+        }
     }
 
     fun getWordCount(): Int {
@@ -130,15 +147,28 @@ class EditorViewModel @Inject constructor(
     fun hideDialog() = _dialogState.hide()
 
     fun launchFileOpen() {
-        viewModelScope.launch { _openFileFlow.emit(Random.nextInt()) }
+        viewModelScope.launch { _openFileFlow.emit(Unit) }
     }
 
-    fun launchFileSave() {
-        viewModelScope.launch { _saveFileFlow.emit(Random.nextInt()) }
+    private fun launchFileSave() {
+        viewModelScope.launch { _saveFileFlow.emit(Unit) }
     }
 
     fun setFileUri(uri: Uri) {
         this.fileUri.value = uri
+        updateHistory()
+    }
+
+    private fun updateHistory() {
+        fileUri.value?.let { uri ->
+            viewModelScope.launch(Dispatchers.IO) {
+                addToHistory(uri)
+            }
+        }
+    }
+
+    fun getCurrentFilename(): String {
+        return fileUri.value?.let(getFilename::invoke) ?: "unnamed.txt"
     }
 
     fun setText(value: String) {

@@ -53,6 +53,9 @@ android {
 
 dependencies {
 
+    /* JSON convertor */
+    implementation("com.google.code.gson:gson:2.10.1")
+
     /* Number picker */
     implementation("com.chargemap.compose:numberpicker:1.0.3")
 

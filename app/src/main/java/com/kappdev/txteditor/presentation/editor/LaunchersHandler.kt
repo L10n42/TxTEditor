@@ -5,13 +5,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LaunchersHandler(
     viewModel: EditorViewModel
 ) {
-    val fileOpenState = viewModel.openFileFlow.collectAsState(initial = null)
-    val fileSaveState = viewModel.saveFileFlow.collectAsState(initial = null)
+    val fileOpenTrigger = viewModel.openFileFlow
+    val fileSaveTrigger = viewModel.saveFileFlow
 
     val openFileLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
@@ -33,14 +34,14 @@ fun LaunchersHandler(
         }
     )
 
-    LaunchedEffect(fileOpenState.value) {
-        fileOpenState.value?.let {
+    LaunchedEffect(fileOpenTrigger) {
+        fileOpenTrigger.collectLatest {
             openFileLauncher.launch(arrayOf("text/plain"))
         }
     }
 
-    LaunchedEffect(fileSaveState.value) {
-        fileSaveState.value?.let {
+    LaunchedEffect(fileSaveTrigger) {
+        fileSaveTrigger.collectLatest {
             saveFileLauncher.launch("unnamed.txt")
         }
     }

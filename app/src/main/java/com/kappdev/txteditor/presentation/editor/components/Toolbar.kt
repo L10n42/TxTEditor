@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircleOutline
 import androidx.compose.material.icons.rounded.FileOpen
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
@@ -41,6 +42,9 @@ fun Toolbar(
         ) {
             ToolbarButton(icon = Icons.Rounded.Settings) {
                 onAction(ToolbarAction.OpenSettings)
+            }
+            ToolbarButton(icon = Icons.Rounded.History) {
+                onAction(ToolbarAction.OpenHistory)
             }
             ToolbarButton(icon = Icons.Rounded.FileOpen) {
                 onAction(ToolbarAction.OpenFile)

@@ -40,6 +40,7 @@ fun SettingsBottomSheet(
     val state = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
     val wordCount = remember { viewModel.getWordCount() }
+    val filename = remember { viewModel.getCurrentFilename() }
 
     val isThemeDark by settingsManager.getValueAsState(Setting.Theme)
     val textSize by settingsManager.getValueAsState(Setting.TextSize)
@@ -60,7 +61,7 @@ fun SettingsBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 54.dp)
+                .padding(bottom = 50.dp)
         ) {
             Settings.Switch(
                 title = stringResource(R.string.st_dark_mode),
@@ -119,7 +120,10 @@ fun SettingsBottomSheet(
                 Settings.GroupItem(
                     title = stringResource(R.string.st_share),
                     icon = Icons.Rounded.Share,
-                    onClick = { /* TODO */ }
+                    onClick = {
+                        viewModel.share()
+                        onDismiss()
+                    }
                 )
                 Settings.GroupItem(
                     title = stringResource(R.string.st_copy),
@@ -133,9 +137,16 @@ fun SettingsBottomSheet(
 
             VerticalSpace(16.dp)
 
-            Settings.TextItem(
-                text = stringResource(R.string.st_word_count, wordCount)
-            )
+            Settings.ItemsGroup {
+                Settings.TextItem(
+                    text = stringResource(R.string.st_file, filename),
+                    hasBorder = false
+                )
+                Settings.TextItem(
+                    text = stringResource(R.string.st_word_count, wordCount),
+                    hasBorder = false
+                )
+            }
         }
     }
 }
