@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TXTEditor</string>
+    <string name="app_name">TxT Editor</string>
     <string name="enter_text_hint">Enter a text</string>
     <string name="title_file_name">File name</string>
     <string name="hint_file_name">Enter file name</string>
