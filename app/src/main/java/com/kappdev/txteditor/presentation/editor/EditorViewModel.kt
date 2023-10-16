@@ -6,6 +6,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kappdev.txteditor.R
@@ -52,7 +53,7 @@ class EditorViewModel @Inject constructor(
     val saveFileFlow: SharedFlow<Unit> = _saveFileFlow
 
     private var originalText = ""
-    var text = mutableStateOf("")
+    var text = mutableStateOf(TextFieldValue())
         private set
 
     private val fileUri = mutableStateOf<Uri?>(null)
@@ -73,7 +74,7 @@ class EditorViewModel @Inject constructor(
     }
 
     private fun saveAndThen(block: suspend (value: String) -> Unit) = launchLoading {
-        val writeResult = writeFile(fileUri.value, text.value)
+        val writeResult = writeFile(fileUri.value, getText())
         when (writeResult) {
             is Result.Failure -> snackbarState.show(writeResult.getMessageOrEmpty())
             is Result.Success -> block(writeResult.value)
@@ -94,7 +95,7 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    private fun isContentChanged() = (text.value != originalText)
+    private fun isContentChanged() = (getText() != originalText)
 
     fun checkChangesAndOpen() {
         if (isContentChanged()) _dialogState.show(Dialog.SaveAndOpen) else launchFileOpen()
@@ -119,31 +120,31 @@ class EditorViewModel @Inject constructor(
 
     private fun setContent(content: String) {
         originalText = content
-        text.value = content
+        text.value = TextFieldValue(content)
     }
 
     fun copyToClipboard() {
-        if (text.value.isEmpty()) {
+        if (getText().isEmpty()) {
             viewModelScope.launch { snackbarState.show(R.string.copy_error_msg) }
         } else {
             val clipboardManager = app.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("Copied Text", text.value)
+            val clip = ClipData.newPlainText("Copied Text", getText())
             clipboardManager.setPrimaryClip(clip)
             viewModelScope.launch { snackbarState.show(R.string.copied_to_clipboard) }
         }
     }
 
     fun share() {
-        if (text.value.isEmpty()) {
+        if (getText().isEmpty()) {
             viewModelScope.launch { snackbarState.show(R.string.share_error_msg) }
         } else {
-            shareText(text.value)
+            shareText(getText())
         }
     }
 
     fun getWordCount(): Int {
-        val words = text.value.trim().split(Regex("\\s+"))
-        return if (text.value.isEmpty()) 0 else words.size
+        val words = getText().trim().split(Regex("\\s+"))
+        return if (getText().isEmpty()) 0 else words.size
     }
 
     fun hideDialog() = _dialogState.hide()
@@ -173,7 +174,9 @@ class EditorViewModel @Inject constructor(
         return fileUri.value?.let(getFilename::invoke) ?: "unnamed.txt"
     }
 
-    fun setText(value: String) {
+    fun setText(value: TextFieldValue) {
         this.text.value = value
     }
+
+    private fun getText() = this.text.value.text
 }
