@@ -19,6 +19,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kappdev.txteditor.data.Setting
 import com.kappdev.txteditor.data.SettingsManager
 import com.kappdev.txteditor.domain.model.EditorSettings
 import com.kappdev.txteditor.presentation.common.InfoSnackbarHandler
@@ -41,6 +42,7 @@ fun EditorScreen(
     val (isSettingsVisible, showSettings) = remember { mutableStateOf(false) }
     val (isHistoryVisible, showHistory) = remember { mutableStateOf(false) }
     val editorSettings by settingsManager.getEditorSettings().collectAsState(EditorSettings())
+    val isThemeDark by settingsManager.getValueAsState(Setting.Theme)
 
     LoadingDialog(isVisible = viewModel.loadingState.isLoading.value)
 
@@ -69,7 +71,7 @@ fun EditorScreen(
 
     Scaffold(
         bottomBar = {
-            Toolbar { action ->
+            Toolbar(isThemeDark) { action ->
                 when (action) {
                     ToolbarAction.OpenSettings -> showSettings(true)
                     ToolbarAction.OpenHistory -> showHistory(true)

@@ -32,10 +32,17 @@ import com.kappdev.txteditor.presentation.editor.ToolbarAction
 
 @Composable
 fun Toolbar(
+    isThemeDark: Boolean,
     onAction: (ToolbarAction) -> Unit,
 ) {
-    val color = MaterialTheme.colorScheme.surface
-    val shadowColor = MaterialTheme.colorScheme.onSurface
+    val background = when {
+        isThemeDark -> MaterialTheme.colorScheme.surface
+        else -> MaterialTheme.colorScheme.background
+    }
+    val shadowColor = when {
+        isThemeDark -> MaterialTheme.colorScheme.onSurface.copy(0.24f)
+        else -> MaterialTheme.colorScheme.surface
+    }
 
     Surface(
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
@@ -48,8 +55,8 @@ fun Toolbar(
                 .height(48.dp)
                 .drawBehind {
                     toolbarForm(
-                        background = color,
-                        shadowColor = shadowColor.copy(0.24f)
+                        background = background,
+                        shadowColor = shadowColor
                     )
                 },
             verticalAlignment = Alignment.CenterVertically,
