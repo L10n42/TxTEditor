@@ -21,6 +21,5 @@
 #-renamesourcefileattribute SourceFile
 
 -keepattributes Signature
--keepclassmembers class com.google.gson.reflect.TypeToken {
-    <init>(java.lang.reflect.Type);
-}
+-keep class com.google.gson.reflect.TypeToken { *; }
+-keep class * extends com.google.gson.reflect.TypeToken
