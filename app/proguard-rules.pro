@@ -22,5 +22,5 @@
 
 -keepattributes Signature
 -keepclassmembers class com.google.gson.reflect.TypeToken {
-    <init>(...);
+    <init>(java.lang.reflect.Type);
 }
