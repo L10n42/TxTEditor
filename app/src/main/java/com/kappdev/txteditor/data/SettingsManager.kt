@@ -25,6 +25,7 @@ sealed class Setting<T>(val key: Preferences.Key<T>, val default: T) {
     data object TextStyle: Setting<String>(SettingsKey.TEXT_STYLE, SettingsDefaults.TEXT_STYLE.name)
     data object IsTextBold: Setting<Boolean>(SettingsKey.IS_TEXT_BOLD, SettingsDefaults.IS_TEXT_BOLD)
     data object IsTextItalic: Setting<Boolean>(SettingsKey.IS_TEXT_ITALIC, SettingsDefaults.IS_TEXT_ITALIC)
+    data object ShowLineNumbering: Setting<Boolean>(SettingsKey.SHOW_LINE_NUMBERING, SettingsDefaults.SHOW_LINE_NUMBERING)
 }
 
 object SettingsDefaults {
@@ -33,6 +34,7 @@ object SettingsDefaults {
     val TEXT_STYLE = TextStyle.DEFAULT
     const val IS_TEXT_BOLD = false
     const val IS_TEXT_ITALIC = false
+    const val SHOW_LINE_NUMBERING = false
 }
 
 object SettingsKey {
@@ -41,6 +43,7 @@ object SettingsKey {
     val TEXT_STYLE = stringPreferencesKey("TEXT_STYLE")
     val IS_TEXT_BOLD = booleanPreferencesKey("IS_TEXT_BOLD")
     val IS_TEXT_ITALIC = booleanPreferencesKey("IS_TEXT_ITALIC")
+    val SHOW_LINE_NUMBERING = booleanPreferencesKey("SHOW_LINE_NUMBERING")
 }
 
 class SettingsManager @Inject constructor(
@@ -50,9 +53,10 @@ class SettingsManager @Inject constructor(
     fun getEditorSettings() = context.dataStore.data.map { preferences ->
         EditorSettings(
             textSize = preferences.get(Setting.TextSize),
-            textStyle = TextStyle.valueOf(preferences.get(Setting.TextStyle)),
             isBold = preferences.get(Setting.IsTextBold),
-            isItalic = preferences.get(Setting.IsTextItalic)
+            isItalic = preferences.get(Setting.IsTextItalic),
+            showLineNumbering = preferences.get(Setting.ShowLineNumbering),
+            textStyle = TextStyle.valueOf(preferences.get(Setting.TextStyle))
         )
     }
 
