@@ -8,6 +8,7 @@ import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.FormatBold
 import androidx.compose.material.icons.rounded.FormatItalic
 import androidx.compose.material.icons.rounded.FormatSize
+import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +48,7 @@ fun SettingsBottomSheet(
     val textStyle by settingsManager.getValueAsState(Setting.TextStyle)
     val isTextBold by settingsManager.getValueAsState(Setting.IsTextBold)
     val isTextItalic by settingsManager.getValueAsState(Setting.IsTextItalic)
+    val showLineNumbering by settingsManager.getValueAsState(Setting.ShowLineNumbering)
 
     fun manageSettings(block: suspend SettingsManager.() -> Unit) {
         scope.launch { with(settingsManager) { block() } }
@@ -110,6 +112,15 @@ fun SettingsBottomSheet(
                     hasBorder = false,
                     onCheckedChange = { isItalic ->
                         manageSettings { setValueTo(SettingsKey.IS_TEXT_ITALIC, isItalic) }
+                    }
+                )
+                Settings.Switch(
+                    title = stringResource(R.string.st_line_numbering),
+                    icon = Icons.Rounded.Numbers,
+                    isChecked = showLineNumbering,
+                    hasBorder = false,
+                    onCheckedChange = { show ->
+                        manageSettings { setValueTo(SettingsKey.SHOW_LINE_NUMBERING, show) }
                     }
                 )
             }
