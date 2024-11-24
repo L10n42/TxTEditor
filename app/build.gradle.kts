@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId = "com.kappdev.txteditor"
         minSdk = 21
-        targetSdk = 33
-        versionCode = 4
-        versionName = "1.3"
+        targetSdk = 34
+        versionCode = 5
+        versionName = "1.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
