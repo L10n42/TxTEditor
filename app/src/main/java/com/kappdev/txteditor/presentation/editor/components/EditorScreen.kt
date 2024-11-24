@@ -99,7 +99,7 @@ fun EditorScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
+                .padding(top = 16.dp, bottom = 16.dp, end = 16.dp)
                 .topFadingEdge(
                     MaterialTheme.colorScheme.background,
                     isVisible = scrollState.canScrollBackward
