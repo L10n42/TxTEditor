@@ -55,7 +55,7 @@ fun EditorField(
 
     val textStyle = LocalTextStyle.current.copy(
         fontSize = settings.textSize.sp,
-        lineHeight = (settings.textSize + 3).sp,
+        lineHeight = (settings.textSize * 1.25).sp,
         color = MaterialTheme.colorScheme.onBackground,
         fontFamily = settings.textStyle.family,
         fontWeight = if (settings.isBold) FontWeight.SemiBold else FontWeight.Normal,
