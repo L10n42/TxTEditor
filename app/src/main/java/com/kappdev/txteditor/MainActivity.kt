@@ -10,9 +10,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.kappdev.txteditor.data.Setting
-import com.kappdev.txteditor.data.SettingsManager
-import com.kappdev.txteditor.presentation.editor.components.EditorScreen
+import com.kappdev.txteditor.editor_feature.data.Setting
+import com.kappdev.txteditor.editor_feature.data.SettingsManager
+import com.kappdev.txteditor.editor_feature.presentation.editor.components.EditorScreen
 import com.kappdev.txteditor.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

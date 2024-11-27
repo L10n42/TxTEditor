@@ -1,14 +1,14 @@
 package com.kappdev.txteditor.di
 
 import android.app.Application
-import com.kappdev.txteditor.data.SettingsManager
-import com.kappdev.txteditor.data.repository.HistoryRepositoryImpl
-import com.kappdev.txteditor.domain.repository.HistoryRepository
-import com.kappdev.txteditor.domain.use_case.AddToHistory
-import com.kappdev.txteditor.domain.use_case.GetFileName
-import com.kappdev.txteditor.domain.use_case.ReadFile
-import com.kappdev.txteditor.domain.use_case.ShareText
-import com.kappdev.txteditor.domain.use_case.WriteFile
+import com.kappdev.txteditor.editor_feature.data.SettingsManager
+import com.kappdev.txteditor.editor_feature.data.repository.HistoryRepositoryImpl
+import com.kappdev.txteditor.editor_feature.domain.repository.HistoryRepository
+import com.kappdev.txteditor.editor_feature.domain.use_case.AddToHistory
+import com.kappdev.txteditor.editor_feature.domain.use_case.GetFileName
+import com.kappdev.txteditor.editor_feature.domain.use_case.ReadFile
+import com.kappdev.txteditor.editor_feature.domain.use_case.ShareText
+import com.kappdev.txteditor.editor_feature.domain.use_case.WriteFile
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
