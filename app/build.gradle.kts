@@ -13,8 +13,8 @@ android {
         applicationId = "com.kappdev.txteditor"
         minSdk = 21
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.3.1"
+        versionCode = 13
+        versionName = "1.3.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -63,6 +63,9 @@ dependencies {
 
     /* Data store */
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
 
     /* Google - accompanist */
     val accompanistVersion = "0.31.4-beta"

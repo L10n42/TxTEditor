@@ -30,4 +30,6 @@
     <string name="clear_history">Clear history</string>
     <string name="nothing_to_save_msg">You have no changes to save.</string>
     <string name="st_line_numbering">Line numbering</string>
+    <string name="the_new_app_version_is_ready">The new app version is ready!</string>
+    <string name="install">Install</string>
 </resources>
