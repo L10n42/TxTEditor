@@ -19,7 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -56,7 +56,7 @@ fun EditorField(
     val textStyle = LocalTextStyle.current.copy(
         fontSize = settings.textSize.sp,
         lineHeight = (settings.textSize * 1.25).sp,
-        color = MaterialTheme.colorScheme.onBackground,
+        color = MaterialTheme.colorScheme.onSurface,
         fontFamily = settings.textStyle.family,
         fontWeight = if (settings.isBold) FontWeight.SemiBold else FontWeight.Normal,
         fontStyle = if (settings.isItalic) FontStyle.Italic else FontStyle.Normal
@@ -70,9 +70,7 @@ fun EditorField(
             onValueChange(it)
         },
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-        cursorBrush = Brush.linearGradient(
-            listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.primary)
-        ),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         textStyle = textStyle,
         decorationBox = { innerTextField ->
             Row {
@@ -84,7 +82,7 @@ fun EditorField(
                         Text(
                             text = stringResource(R.string.enter_text_hint),
                             style = textStyle.copy(
-                                color = MaterialTheme.colorScheme.onSurface
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         )
                     }
@@ -138,7 +136,7 @@ private fun LineNumbering(
     Text(
         text = getNumbersString(lineCount),
         style = style.copy(
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Normal,
             fontStyle = FontStyle.Normal,
             textAlign = TextAlign.End,

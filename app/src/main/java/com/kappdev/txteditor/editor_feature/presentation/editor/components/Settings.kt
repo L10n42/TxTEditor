@@ -22,10 +22,13 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,7 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kappdev.txteditor.editor_feature.presentation.common.components.HorizontalSpace
 import com.kappdev.txteditor.editor_feature.presentation.common.components.PopupNumberPicker
-import com.kappdev.txteditor.editor_feature.presentation.common.defaultSwitchColors
 
 object Settings
 
@@ -70,7 +71,7 @@ fun Settings.NumberPicker(
                 .size(26.dp)
                 .border(
                     width = 0.5.dp,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = LocalContentColor.current,
                     shape = RoundedCornerShape(4.dp)
                 )
                 .clip(RoundedCornerShape(4.dp))
@@ -165,10 +166,7 @@ fun Settings.TextItem(
     hasBorder: Boolean = true,
 ) {
     Form(hasBorder = hasBorder) {
-        Title(
-            text = text,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+        Title(text = text)
     }
 }
 
@@ -191,7 +189,6 @@ fun Settings.Switch(
         }
         Switch(
             checked = isChecked,
-            colors = defaultSwitchColors(),
             onCheckedChange = onCheckedChange,
             enabled = enabled,
             thumbContent = {
@@ -221,7 +218,6 @@ fun Settings.Icon(
 ) {
     Icon(
         imageVector = icon,
-        tint = MaterialTheme.colorScheme.onBackground,
         modifier = modifier.size(20.dp),
         contentDescription = null
     )
@@ -230,13 +226,11 @@ fun Settings.Icon(
 @Composable
 fun Settings.Title(
     text: String,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onBackground
+    modifier: Modifier = Modifier
 ) {
     Text(
         text = text,
         maxLines = 1,
-        color = color,
         fontSize = 16.sp,
         modifier = modifier,
         overflow = TextOverflow.Ellipsis
@@ -256,16 +250,20 @@ fun Settings.Form(
         modifier = Modifier.background(MaterialTheme.colorScheme.background.copy(0.16f))
     ) {
         if (hasBorder) DefaultDivider()
-        Row(
-            modifier = Modifier
-                .height(height)
-                .fillMaxWidth()
-                .then(clickModifier)
-                .padding(horizontal = DefaultItemPadding),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = contentArrangement,
-            content = content
-        )
+        CompositionLocalProvider(
+            LocalContentColor provides MaterialTheme.colorScheme.onSurface,
+        ) {
+            Row(
+                modifier = Modifier
+                    .height(height)
+                    .fillMaxWidth()
+                    .then(clickModifier)
+                    .padding(horizontal = DefaultItemPadding),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = contentArrangement,
+                content = content
+            )
+        }
         if (hasBorder) DefaultDivider()
     }
 }

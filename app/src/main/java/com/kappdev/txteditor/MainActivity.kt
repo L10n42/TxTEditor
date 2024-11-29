@@ -54,8 +54,6 @@ class MainActivity : ComponentActivity() {
             AppTheme(darkTheme = darkTheme) {
                 val snackbarHostState = remember { SnackbarHostState() }
 
-                SetupSystemBarsColor()
-
                 EditorScreen(settingsManager)
 
                 LaunchedEffect(Unit) {
@@ -94,18 +92,6 @@ class MainActivity : ComponentActivity() {
             lifecycleScope.launch {
                 updateSnackbarEvent.emit(Unit)
             }
-        }
-    }
-
-    @Composable
-    private fun SetupSystemBarsColor(
-        statusBarColor: Color = MaterialTheme.colorScheme.background,
-        navigationBarColor: Color = MaterialTheme.colorScheme.surface
-    ) {
-        val systemUiController = rememberSystemUiController()
-        SideEffect {
-            systemUiController.setNavigationBarColor(navigationBarColor)
-            systemUiController.setStatusBarColor(statusBarColor)
         }
     }
 

@@ -5,7 +5,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -51,9 +54,12 @@ class EditorViewModel @Inject constructor(
     private val _saveFileFlow = MutableSharedFlow<Unit>()
     val saveFileFlow: SharedFlow<Unit> = _saveFileFlow
 
-    private var originalText = ""
-    var text = mutableStateOf(TextFieldValue())
+    private var originalText by mutableStateOf("")
+
+    var fieldValue = mutableStateOf(TextFieldValue())
         private set
+
+    val isContentChanged by derivedStateOf { fieldValue.value.text != originalText }
 
     private val fileUri = mutableStateOf<Uri?>(null)
 
@@ -94,18 +100,16 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    private fun isContentChanged() = (getText() != originalText)
-
     fun checkChangesAndOpen() {
-        if (isContentChanged()) _dialogState.show(Dialog.SaveAndOpen) else launchFileOpen()
+        if (isContentChanged) _dialogState.show(Dialog.SaveAndOpen) else launchFileOpen()
     }
 
     fun checkChangesAndNew() {
-        if (isContentChanged()) _dialogState.show(Dialog.SaveAndNew) else newFile()
+        if (isContentChanged) _dialogState.show(Dialog.SaveAndNew) else newFile()
     }
 
     fun checkFileAndSave() {
-        if (isContentChanged()) {
+        if (isContentChanged) {
             if (fileUri.value == null) launchFileSave() else saveFile()
         } else {
             viewModelScope.launch { snackbarState.show(R.string.nothing_to_save_msg) }
@@ -119,7 +123,7 @@ class EditorViewModel @Inject constructor(
 
     private fun setContent(content: String) {
         originalText = content
-        text.value = TextFieldValue(content)
+        fieldValue.value = TextFieldValue(content)
     }
 
     fun copyToClipboard() {
@@ -174,8 +178,8 @@ class EditorViewModel @Inject constructor(
     }
 
     fun setText(value: TextFieldValue) {
-        this.text.value = value
+        this.fieldValue.value = value
     }
 
-    private fun getText() = this.text.value.text
+    private fun getText() = this.fieldValue.value.text
 }

@@ -56,9 +56,8 @@ fun SettingsBottomSheet(
 
     ModalBottomSheet(
         sheetState = state,
-        tonalElevation = 0.dp,
         onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface
+        tonalElevation = 0.dp
     ) {
         Column(
             modifier = Modifier

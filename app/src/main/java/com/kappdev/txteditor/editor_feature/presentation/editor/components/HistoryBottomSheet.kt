@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,12 +40,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.kappdev.txteditor.R
 import com.kappdev.txteditor.editor_feature.presentation.common.components.HorizontalSpace
 import com.kappdev.txteditor.editor_feature.presentation.editor.HistoryViewModel
+import com.kappdev.txteditor.ui.theme.AppTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -65,8 +68,7 @@ fun HistoryBottomSheet(
     ModalBottomSheet(
         sheetState = state,
         tonalElevation = 0.dp,
-        onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surface
+        onDismissRequest = onDismiss
     ) {
         LazyColumn(
             modifier = Modifier
@@ -112,12 +114,15 @@ fun LazyListScope.itemIf(condition: Boolean, content: @Composable LazyItemScope.
 
 @Composable
 private fun EmptyHistory() {
-    Text(
-        text = stringResource(R.string.empty_history_msg),
-        fontSize = 16.sp,
-        modifier = Modifier.padding(start = 16.dp),
-        color = MaterialTheme.colorScheme.onBackground
-    )
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(R.string.empty_history_msg),
+            fontSize = 16.sp,
+            modifier = Modifier.padding(16.dp)
+        )
+    }
 }
 
 @Composable
@@ -136,8 +141,7 @@ private fun ClearHistoryButton(
         ) {
             Text(
                 text = stringResource(R.string.clear_history),
-                fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.primary
+                fontSize = 16.sp
             )
         }
     }
@@ -188,17 +192,14 @@ private fun AnimatedHistoryCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HistoryCard(
     filename: String,
     onRemove: () -> Unit,
     onClick: () -> Unit
 ) {
-    Surface(
-        tonalElevation = 0.dp,
-        shadowElevation = 4.dp,
-        shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.background,
+    ElevatedCard(
         onClick = onClick
     ) {
         Row(
@@ -211,15 +212,13 @@ private fun HistoryCard(
                 maxLines = 1,
                 fontSize = 16.sp,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onBackground
+                modifier = Modifier.weight(1f)
             )
 
             IconButton(onClick = onRemove) {
                 Icon(
                     imageVector = Icons.Rounded.Close,
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    contentDescription = "remove file from history"
+                    contentDescription = "Remove $filename from history"
                 )
             }
         }
