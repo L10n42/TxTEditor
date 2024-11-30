@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kappdev.txteditor.analytics.domain.AnalyticsSender
+import com.kappdev.txteditor.analytics.domain.events.ClearHistoryEvent
 import com.kappdev.txteditor.editor_feature.domain.repository.HistoryRepository
 import com.kappdev.txteditor.editor_feature.domain.use_case.GetFileName
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val historyRepository: HistoryRepository,
-    private val getFilename: GetFileName
+    private val getFilename: GetFileName,
+    private val analyticsSender: AnalyticsSender
 ) : ViewModel() {
 
     var history = mutableStateOf<List<Uri>>(emptyList())
@@ -36,6 +39,7 @@ class HistoryViewModel @Inject constructor(
     fun clearHistory() {
         viewModelScope.launch(Dispatchers.IO) {
             historyRepository.clearHistory()
+            analyticsSender.sendEvent(ClearHistoryEvent)
         }
     }
 

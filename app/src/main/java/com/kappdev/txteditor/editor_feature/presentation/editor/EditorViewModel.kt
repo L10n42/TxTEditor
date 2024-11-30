@@ -13,6 +13,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kappdev.txteditor.R
+import com.kappdev.txteditor.analytics.domain.AnalyticsProperty
+import com.kappdev.txteditor.analytics.domain.AnalyticsSender
+import com.kappdev.txteditor.analytics.domain.events.CopyTextEvent
+import com.kappdev.txteditor.analytics.domain.events.NewFileEvent
+import com.kappdev.txteditor.analytics.domain.events.OpenFileEvent
+import com.kappdev.txteditor.analytics.domain.events.OpenFileFromHistoryEvent
+import com.kappdev.txteditor.analytics.domain.events.SaveFileEvent
+import com.kappdev.txteditor.analytics.domain.events.ShareTextEvent
 import com.kappdev.txteditor.editor_feature.domain.use_case.AddToHistory
 import com.kappdev.txteditor.editor_feature.domain.use_case.GetFileName
 import com.kappdev.txteditor.editor_feature.domain.use_case.ReadFile
@@ -39,7 +47,8 @@ class EditorViewModel @Inject constructor(
     private val shareText: ShareText,
     private val getFilename: GetFileName,
     private val addToHistory: AddToHistory,
-    private val app: Application
+    private val app: Application,
+    private val analyticsSender: AnalyticsSender
 ) : ViewModel() {
 
     private val _loadingState = mutableLoadingState()
@@ -76,6 +85,7 @@ class EditorViewModel @Inject constructor(
     fun saveFile() = saveAndThen { value ->
         originalText = value
         snackbarState.show(R.string.msg_file_saved)
+        analyticsSender.sendEvent(SaveFileEvent)
     }
 
     private fun saveAndThen(block: suspend (value: String) -> Unit) = launchLoading {
@@ -86,7 +96,19 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    fun readFileFromUri() = launchLoading {
+    fun openHistoryFile(uri: Uri) {
+        setFileUri(uri)
+        readFileFromUri()
+        analyticsSender.sendEvent(OpenFileFromHistoryEvent)
+    }
+
+    fun openFile(uri: Uri) {
+        setFileUri(uri)
+        readFileFromUri()
+        analyticsSender.sendEvent(OpenFileEvent)
+    }
+
+    private fun readFileFromUri() = launchLoading {
         val readResult = readFile(fileUri.value)
         when (readResult) {
             is Result.Success -> setContent(readResult.value)
@@ -119,6 +141,7 @@ class EditorViewModel @Inject constructor(
     fun newFile() {
         setContent("")
         fileUri.value = null
+        analyticsSender.sendEvent(NewFileEvent)
     }
 
     private fun setContent(content: String) {
@@ -133,6 +156,7 @@ class EditorViewModel @Inject constructor(
             val clipboardManager = app.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("Copied Text", getText())
             clipboardManager.setPrimaryClip(clip)
+            analyticsSender.sendEvent(CopyTextEvent)
             viewModelScope.launch { snackbarState.show(R.string.copied_to_clipboard) }
         }
     }
@@ -142,6 +166,7 @@ class EditorViewModel @Inject constructor(
             viewModelScope.launch { snackbarState.show(R.string.share_error_msg) }
         } else {
             shareText(getText())
+            analyticsSender.sendEvent(ShareTextEvent)
         }
     }
 
@@ -179,6 +204,10 @@ class EditorViewModel @Inject constructor(
 
     fun setText(value: TextFieldValue) {
         this.fieldValue.value = value
+    }
+
+    fun setUserProperty(property: AnalyticsProperty) {
+        analyticsSender.setUserProperty(property)
     }
 
     private fun getText() = this.fieldValue.value.text

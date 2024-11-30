@@ -47,8 +47,7 @@ fun EditorScreen(
     if (isHistoryVisible) {
         HistoryBottomSheet(
             openFile = { fileUri ->
-                viewModel.setFileUri(fileUri)
-                viewModel.readFileFromUri()
+                viewModel.openHistoryFile(fileUri)
             },
             onDismiss = { showHistory(false) }
         )

@@ -12,7 +12,6 @@ import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -23,6 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kappdev.txteditor.R
+import com.kappdev.txteditor.analytics.domain.properties.AppThemeProperty
+import com.kappdev.txteditor.analytics.domain.properties.LineNumberingProperty
+import com.kappdev.txteditor.analytics.domain.properties.TextSizeProperty
+import com.kappdev.txteditor.analytics.domain.properties.TextStyleProperty
 import com.kappdev.txteditor.editor_feature.data.Setting
 import com.kappdev.txteditor.editor_feature.data.SettingsKey
 import com.kappdev.txteditor.editor_feature.data.SettingsManager
@@ -69,7 +72,10 @@ fun SettingsBottomSheet(
                 icon = Icons.Rounded.Palette,
                 isChecked = isThemeDark,
                 onCheckedChange = { isDark ->
-                    manageSettings { setValueTo(SettingsKey.THEME, isDark) }
+                    manageSettings {
+                        setValueTo(SettingsKey.THEME, isDark)
+                        viewModel.setUserProperty(AppThemeProperty(isDark))
+                    }
                 }
             )
 
@@ -78,7 +84,10 @@ fun SettingsBottomSheet(
             Settings.TextStylePicker(
                 currentStyle = TextStyle.valueOf(textStyle),
                 onStyleChange = { newTextStyle ->
-                    manageSettings { setValueTo(SettingsKey.TEXT_STYLE, newTextStyle.name) }
+                    manageSettings {
+                        setValueTo(SettingsKey.TEXT_STYLE, newTextStyle.name)
+                        viewModel.setUserProperty(TextStyleProperty(newTextStyle))
+                    }
                 }
             )
 
@@ -92,7 +101,10 @@ fun SettingsBottomSheet(
                     hasBorder = false,
                     range = 8..24,
                     onNumberChange = { newTextSize ->
-                        manageSettings { setValueTo(SettingsKey.TEXT_SIZE, newTextSize) }
+                        manageSettings {
+                            setValueTo(SettingsKey.TEXT_SIZE, newTextSize)
+                            viewModel.setUserProperty(TextSizeProperty(newTextSize))
+                        }
                     }
                 )
                 Settings.Switch(
@@ -119,7 +131,10 @@ fun SettingsBottomSheet(
                     isChecked = showLineNumbering,
                     hasBorder = false,
                     onCheckedChange = { show ->
-                        manageSettings { setValueTo(SettingsKey.SHOW_LINE_NUMBERING, show) }
+                        manageSettings {
+                            setValueTo(SettingsKey.SHOW_LINE_NUMBERING, show)
+                            viewModel.setUserProperty(LineNumberingProperty(show))
+                        }
                     }
                 )
             }
