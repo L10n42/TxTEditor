@@ -5,8 +5,9 @@
     <string name="hint_file_name">Enter file name</string>
     <string name="btn_cancel">Cancel</string>
     <string name="btn_save">Save</string>
+    <string name="btn_dismiss">Dismiss</string>
     <string name="msg_file_saved">File has been saved successfully.</string>
-    <string name="title_file_save">File save</string>
+    <string name="unsaved_changes">Unsaved changes</string>
     <string name="msg_save_changes">Do you want to save changes?</string>
     <string name="msg_save_changes_before_open">Do you want to save changes before opening a new file?</string>
     <string name="btn_discard">Discard</string>
