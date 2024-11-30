@@ -74,17 +74,25 @@ class EditorViewModel @Inject constructor(
 
     val snackbarState = SnackbarState(app)
 
+    private var afterFileSaved: (() -> Unit)? = null
+
     fun saveAndNew() {
-        if (fileUri.value == null) launchFileSave() else saveAndThen { newFile() }
+        if (fileUri.value == null) launchFileSave { newFile() } else saveAndThen { newFile() }
     }
 
     fun saveAndOpen() {
-        if (fileUri.value == null) launchFileSave() else saveAndThen { launchFileOpen() }
+        if (fileUri.value == null) launchFileSave { launchFileOpen() } else saveAndThen { launchFileOpen() }
+    }
+
+    fun saveAndOpenFromHistory(uri: Uri) {
+        if (fileUri.value == null) launchFileSave { openHistoryFile(uri) } else saveAndThen { openHistoryFile(uri) }
     }
 
     fun saveFile() = saveAndThen { value ->
         originalText = value
         snackbarState.show(R.string.msg_file_saved)
+        afterFileSaved?.invoke()
+        afterFileSaved = null
         analyticsSender.sendEvent(SaveFileEvent)
     }
 
@@ -97,21 +105,22 @@ class EditorViewModel @Inject constructor(
     }
 
     fun openHistoryFile(uri: Uri) {
-        setFileUri(uri)
-        readFileFromUri()
+        readFileFromUri(uri)
         analyticsSender.sendEvent(OpenFileFromHistoryEvent)
     }
 
     fun openFile(uri: Uri) {
-        setFileUri(uri)
-        readFileFromUri()
+        readFileFromUri(uri)
         analyticsSender.sendEvent(OpenFileEvent)
     }
 
-    private fun readFileFromUri() = launchLoading {
-        val readResult = readFile(fileUri.value)
+    private fun readFileFromUri(uri: Uri) = launchLoading {
+        val readResult = readFile(uri)
         when (readResult) {
-            is Result.Success -> setContent(readResult.value)
+            is Result.Success -> {
+                setFileUri(uri)
+                setContent(readResult.value)
+            }
             is Result.Failure -> snackbarState.show(readResult.getMessageOrEmpty())
         }
     }
@@ -120,6 +129,10 @@ class EditorViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _loadingState.suspendLoading(block)
         }
+    }
+
+    fun checkChangesAndOpenFromHistory(uri: Uri) {
+        if (isContentChanged) _dialogState.show(Dialog.SaveAndOpenFromHistory(uri)) else openHistoryFile(uri)
     }
 
     fun checkChangesAndOpen() {
@@ -181,8 +194,11 @@ class EditorViewModel @Inject constructor(
         viewModelScope.launch { _openFileFlow.emit(Unit) }
     }
 
-    private fun launchFileSave() {
-        viewModelScope.launch { _saveFileFlow.emit(Unit) }
+    private fun launchFileSave(afterFileSaved: (() -> Unit)? = null) {
+        viewModelScope.launch {
+            afterFileSaved?.let { this@EditorViewModel.afterFileSaved = it }
+            _saveFileFlow.emit(Unit)
+        }
     }
 
     fun setFileUri(uri: Uri) {

@@ -30,7 +30,15 @@ fun DialogController(
                     onPositive = viewModel::saveAndOpen
                 )
             }
-            null -> {}
+            is Dialog.SaveAndOpenFromHistory -> {
+                InfoDialog(
+                    data = dialogData,
+                    onDismiss = viewModel::hideDialog,
+                    onNegative = { viewModel.openHistoryFile(dialogData.fileUri) },
+                    onPositive = { viewModel.saveAndOpenFromHistory(dialogData.fileUri) }
+                )
+            }
+            null -> TODO()
         }
     }
 }

@@ -47,7 +47,7 @@ fun EditorScreen(
     if (isHistoryVisible) {
         HistoryBottomSheet(
             openFile = { fileUri ->
-                viewModel.openHistoryFile(fileUri)
+                viewModel.checkChangesAndOpenFromHistory(fileUri)
             },
             onDismiss = { showHistory(false) }
         )
@@ -81,9 +81,7 @@ fun EditorScreen(
         snackbarHost = {
             SnackbarHost(
                 hostState = scaffoldState.snackbarHostState
-            ) { data ->
-                Snackbar(snackbarData = data)
-            }
+            )
         }
     ) { paddingValues ->
         EditorField(
