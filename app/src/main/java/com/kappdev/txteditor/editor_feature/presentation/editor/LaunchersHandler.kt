@@ -5,6 +5,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.flow.collectLatest
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun LaunchersHandler(
@@ -38,7 +43,13 @@ fun LaunchersHandler(
 
     LaunchedEffect(fileSaveTrigger) {
         fileSaveTrigger.collectLatest {
-            saveFileLauncher.launch("unnamed.txt")
+            saveFileLauncher.launch(getDefaultFileName())
         }
     }
+}
+
+private fun getDefaultFileName(): String {
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd_HH-mm", Locale.getDefault())
+    val currentTime = Date()
+    return "${dateFormat.format(currentTime)}.txt"
 }
