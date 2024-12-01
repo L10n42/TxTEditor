@@ -12,5 +12,6 @@ sealed class Dialog(
 ) {
     data object SaveAndNew: Dialog(R.string.unsaved_changes, R.string.msg_save_changes, negativeButtonRes = R.string.btn_discard)
     data object SaveAndOpen: Dialog(R.string.unsaved_changes, R.string.msg_save_changes_before_open, negativeButtonRes = R.string.btn_discard)
-    data class SaveAndOpenFromHistory(val fileUri: Uri): Dialog(R.string.unsaved_changes, R.string.msg_save_changes_before_open, negativeButtonRes = R.string.btn_discard)
+    data class SaveAndOpenFromHistory(val fileUri: Uri): Dialog(R.string.unsaved_changes, R.string.msg_save_changes, negativeButtonRes = R.string.btn_discard)
+    data class SaveAndOpenSharedText(val text: String): Dialog(R.string.unsaved_changes, R.string.msg_save_changes, negativeButtonRes = R.string.btn_discard)
 }

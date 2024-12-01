@@ -1,5 +1,8 @@
 package com.kappdev.txteditor
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,7 +12,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -37,6 +42,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var settingsManager: SettingsManager
 
+    private var sharedText by mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,12 +51,21 @@ class MainActivity : ComponentActivity() {
         appUpdateManager.registerListener(installStateUpdateListener)
         checkForAppUpdates()
 
+        handleIntentActions(intent)
+
         setContent {
             val darkTheme by settingsManager.getValueAsState(Setting.Theme)
             AppTheme(darkTheme = darkTheme) {
                 val snackbarHostState = remember { SnackbarHostState() }
 
-                EditorScreen(settingsManager)
+                EditorScreen(
+                    settingsManager = settingsManager,
+                    sharedText = sharedText,
+                    onClearSharedText = {
+                        sharedText = null
+                        removeTextExtras()
+                    }
+                )
 
                 LaunchedEffect(Unit) {
                     updateSnackbarEvent.collect {
@@ -88,6 +104,33 @@ class MainActivity : ComponentActivity() {
                 updateSnackbarEvent.emit(Unit)
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntentActions(intent)
+    }
+
+    private fun handleIntentActions(intent: Intent) {
+        if (intent.action == Intent.ACTION_SEND) {
+            intent.parseContentUri()?.let {
+                sharedText = contentResolver.openInputStream(it)?.bufferedReader().use { reader -> reader?.readText() }
+            }
+            intent.getStringExtra(Intent.EXTRA_TEXT)?.let { sharedText = it }
+        }
+    }
+
+    private fun Intent.parseContentUri(): Uri? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+        } else {
+            getParcelableExtra(Intent.EXTRA_STREAM)
+        }
+    }
+
+    private fun removeTextExtras() {
+        intent.removeExtra(Intent.EXTRA_STREAM)
+        intent.removeExtra(Intent.EXTRA_TEXT)
     }
 
     override fun onDestroy() {

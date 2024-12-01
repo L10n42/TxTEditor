@@ -38,6 +38,14 @@ fun DialogController(
                     onPositive = { viewModel.saveAndOpenFromHistory(dialogData.fileUri) }
                 )
             }
+            is Dialog.SaveAndOpenSharedText -> {
+                InfoDialog(
+                    data = dialogData,
+                    onDismiss = viewModel::hideDialog,
+                    onNegative = { viewModel.newFileWithText(dialogData.text) },
+                    onPositive = { viewModel.saveAndOpenSharedText(dialogData.text) }
+                )
+            }
             null -> TODO()
         }
     }

@@ -19,6 +19,7 @@ import com.kappdev.txteditor.analytics.domain.events.CopyTextEvent
 import com.kappdev.txteditor.analytics.domain.events.NewFileEvent
 import com.kappdev.txteditor.analytics.domain.events.OpenFileEvent
 import com.kappdev.txteditor.analytics.domain.events.OpenFileFromHistoryEvent
+import com.kappdev.txteditor.analytics.domain.events.ReceivedSharedTextEvent
 import com.kappdev.txteditor.analytics.domain.events.SaveFileEvent
 import com.kappdev.txteditor.analytics.domain.events.ShareTextEvent
 import com.kappdev.txteditor.editor_feature.domain.use_case.AddToHistory
@@ -88,6 +89,10 @@ class EditorViewModel @Inject constructor(
         if (fileUri.value == null) launchFileSave { openHistoryFile(uri) } else saveAndThen { openHistoryFile(uri) }
     }
 
+    fun saveAndOpenSharedText(text: String) {
+        if (fileUri.value == null) launchFileSave { newFileWithText(text) } else saveAndThen { newFileWithText(text) }
+    }
+
     fun saveFile() = saveAndThen { value ->
         originalText = value
         snackbarState.show(R.string.msg_file_saved)
@@ -131,6 +136,10 @@ class EditorViewModel @Inject constructor(
         }
     }
 
+    fun checkChangesAndOpenSharedText(text: String) {
+        if (isContentChanged) _dialogState.show(Dialog.SaveAndOpenSharedText(text)) else newFileWithText(text)
+    }
+
     fun checkChangesAndOpenFromHistory(uri: Uri) {
         if (isContentChanged) _dialogState.show(Dialog.SaveAndOpenFromHistory(uri)) else openHistoryFile(uri)
     }
@@ -149,6 +158,13 @@ class EditorViewModel @Inject constructor(
         } else {
             viewModelScope.launch { snackbarState.show(R.string.nothing_to_save_msg) }
         }
+    }
+
+    fun newFileWithText(text: String = "") {
+        originalText = ""
+        fieldValue.value = TextFieldValue(text)
+        fileUri.value = null
+        analyticsSender.sendEvent(ReceivedSharedTextEvent)
     }
 
     fun newFile() {

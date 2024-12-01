@@ -41,6 +41,9 @@ object AnalyticsConstants {
             const val EVENT = "clear_history"
         }
 
+        object ReceivedSharedText {
+            const val EVENT = "received_shared_text"
+        }
     }
 
     object UserProperties {

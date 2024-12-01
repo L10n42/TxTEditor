@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Snackbar
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +33,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditorScreen(
     settingsManager: SettingsManager,
-    viewModel: EditorViewModel = viewModel()
+    sharedText: String? = null,
+    viewModel: EditorViewModel = viewModel(),
+
+    onClearSharedText: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -41,6 +44,13 @@ fun EditorScreen(
     val (isSettingsVisible, showSettings) = remember { mutableStateOf(false) }
     val (isHistoryVisible, showHistory) = remember { mutableStateOf(false) }
     val editorSettings by settingsManager.getEditorSettings().collectAsState(EditorSettings())
+
+    LaunchedEffect(sharedText) {
+        sharedText?.let {
+            viewModel.checkChangesAndOpenSharedText(it)
+            onClearSharedText()
+        }
+    }
 
     LoadingDialog(isVisible = viewModel.loadingState.isLoading.value)
 
